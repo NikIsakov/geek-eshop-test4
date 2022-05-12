@@ -9,11 +9,13 @@
         <module name="shop-database" />
         <module name="shop-admin-app" />
         <module name="shop-backend-api-app" />
+        <module name="picture-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="picture-service" options="-parameters" />
       <module name="shop-admin-app" options="-parameters" />
       <module name="shop-backend-api-app" options="-parameters" />
       <module name="shop-database" options="-parameters" />
