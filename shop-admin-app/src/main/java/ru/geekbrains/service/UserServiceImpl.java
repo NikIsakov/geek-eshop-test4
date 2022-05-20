@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.controller.dto.RoleDto;
@@ -33,24 +34,42 @@ public class UserServiceImpl implements UserService {
     @Bean
     public PasswordEncoder passwordEncoder()
     {
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return (String) rawPassword;
-                /* первоначально стояло значение return null, из-за этого выходила ошибка:
-                Error creating bean with name 'securityConfig': Injection of autowired dependencies failed;
-                 nested exception is java.lang.IllegalArgumentException: password cannot be null
-                 */
-            }
-
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return false;
-            }
-        };
+        return new BCryptPasswordEncoder();
+        /*
+        закомментированный код ниже не давал зайти в админку через localhosts,
+        видимо из-за не корректного типа данных. Код выше все исправил
+         */
+//        return new PasswordEncoder() {
+//            @Override
+//            public String encode(CharSequence rawPassword) {
+//                return (String) rawPassword;
+//                /* первоначально стояло значение return null, из-за этого выходила ошибка:
+//                Error creating bean with name 'securityConfig': Injection of autowired dependencies failed;
+//                 nested exception is java.lang.IllegalArgumentException: password cannot be null
+//                 */
+//            }
+//
+//            @Override
+//            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+//                return false;
+//            }
+//        };
     }
 
     @Lazy
+    /*
+    Выходит ошибка:
+    Description:
+The dependencies of some of the beans in the application context form a cycle:
+   userController defined in file [/Users/nikolajisakov/IdeaProjects/geek-eshop-test4/shop-admin-app/target/classes/ru/geekbrains/controller/UserController.class]┌─────┐
+|  userServiceImpl defined in file [/Users/nikolajisakov/IdeaProjects/geek-eshop-test4/shop-admin-app/target/classes/ru/geekbrains/service/UserServiceImpl.class]└─────┘
+Action:
+Relying upon circular references is discouraged and they are prohibited by default.
+Update your application to remove the dependency cycle between beans. As a last resort,
+it may be possible to break the cycle automatically by setting spring.main.allow-circular-references to true.
+
+аннотация @Lazy позволила убрать эту ошибку
+     */
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
