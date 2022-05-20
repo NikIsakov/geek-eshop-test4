@@ -3,6 +3,7 @@ package ru.geekbrains.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    //private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
 
@@ -42,7 +43,7 @@ public class UserController {
     @GetMapping
     public String listPage(Model model,
                            UserListParams userListParams) {
-        logger.info("User list page requested");
+        //logger.info("User list page requested");
 
         model.addAttribute("users", userService.findWithFilter(userListParams));
         return "users";
@@ -50,7 +51,7 @@ public class UserController {
 
     @GetMapping("/new")
     public String newUserForm(Model model) {
-        logger.info("New user page requested");
+        //logger.info("New user page requested");
 
         model.addAttribute("user", new UserDto());
         model.addAttribute("roles", roleRepository.findAll().stream()
@@ -61,7 +62,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public String editUser(@PathVariable("id") Long id, Model model) {
-        logger.info("Edit user page requested");
+        //logger.info("Edit user page requested");
 
         model.addAttribute("user", userService.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found")));
@@ -73,7 +74,7 @@ public class UserController {
 
     @PostMapping
     public String update(@Valid @ModelAttribute("user") UserDto user, BindingResult result, Model model) {
-        logger.info("Saving user");
+        //logger.info("Saving user");
 
         if (result.hasErrors()) {
             model.addAttribute("roles", roleRepository.findAll().stream()
@@ -96,7 +97,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable("id") Long id) {
-        logger.info("Deleting user with id {}", id);
+        //logger.info("Deleting user with id {}", id);
 
         userService.deleteById(id);
         return "redirect:/user";

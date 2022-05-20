@@ -1,6 +1,8 @@
 package ru.geekbrains.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,6 +29,28 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+    @Bean
+    public PasswordEncoder passwordEncoder()
+    {
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return (String) rawPassword;
+                /* первоначально стояло значение return null, из-за этого выходила ошибка:
+                Error creating bean with name 'securityConfig': Injection of autowired dependencies failed;
+                 nested exception is java.lang.IllegalArgumentException: password cannot be null
+                 */
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                return false;
+            }
+        };
+    }
+
+    @Lazy
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository, PasswordEncoder passwordEncoder) {

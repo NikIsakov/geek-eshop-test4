@@ -7,7 +7,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import ru.geekbrains.controller.NotFoundException;
 import ru.geekbrains.controller.dto.CategoryDto;
 import ru.geekbrains.controller.dto.ProductDto;
@@ -18,7 +17,6 @@ import ru.geekbrains.persist.model.Category;
 import ru.geekbrains.persist.model.Picture;
 import ru.geekbrains.persist.model.Product;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,14 +27,11 @@ public class ProductServiceImpl implements ProductService {
 
     private final CategoryRepository categoryRepository;
 
-    private final PictureService pictureService;
-
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,
-                              CategoryRepository categoryRepository, PictureService pictureService) {
+                              CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
-        this.pictureService = pictureService;
     }
 
     @Override
@@ -82,19 +77,19 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(productDto.getPrice());
         product.setDescription(productDto.getDescription());
 
-        if (productDto.getNewPicture() != null) {
-            for (MultipartFile newPicture: productDto.getNewPicture()) {
-                try {
-                    product.getPictures().add(new Picture(null,
-                            newPicture.getOriginalFilename(),
-                            newPicture.getContentType(),
-                            pictureService.createPicture(newPicture.getBytes()),
-                            product));
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
+//        if (productDto.getNewPicture() != null) {
+//            for (MultipartFile newPicture: productDto.getNewPicture()) {
+//                try {
+//                    product.getPictures().add(new Picture(null,
+//                            newPicture.getOriginalFilename(),
+//                            newPicture.getContentType(),
+//                            pictureService.createPicture(newPicture.getBytes()),
+//                            product));
+//                } catch (IOException ex) {
+//                    throw new RuntimeException(ex);
+//                }
+//            }
+//        }
 
         productRepository.save(product);
     }
